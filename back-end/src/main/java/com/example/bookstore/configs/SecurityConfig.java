@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/v1/ping").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/v1/books/**").permitAll() // permitting all only the GET endpoints for books
+                        .requestMatchers("/api/v1/users/register").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll() // make swagger endpoints public, however ...
                         .requestMatchers("/actuator/**").hasRole("ADMIN") // ...actuator endpoints only for ADMINs
                         .anyRequest().authenticated() // Require authentication for all requests
