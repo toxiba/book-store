@@ -1,18 +1,14 @@
-package com.example.bookstore.controllers;
+package com.example.bookstore.integration;
 
-import com.example.bookstore.configs.TestConfig;
 import com.example.bookstore.dtos.UserDto;
 import com.example.bookstore.entities.UserEntity;
-import com.example.bookstore.exceptions.AlreadyExistsException;
-import com.example.bookstore.mappers.UserMapper;
-import com.example.bookstore.services.IUserService;
+import com.example.bookstore.respositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -21,31 +17,30 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(UserController.class)
+@SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("tests")
-@Import({TestConfig.class})
-class UserControllerTests {
+class UserControllerIntegrationTests {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private IUserService service;
-
-    @Autowired
-    private UserMapper mapper;
+    private UserRepository repository;
 
     @Autowired
     private ObjectMapper objectMapper;
 
     private static final String USERS_CONTROLLER_URI = "/api/v1/users";
+
+    @BeforeEach
+    void beforeEach() {
+        repository.deleteAll();
+    }
 
     /**
      * Given the test objects to support the tests,
@@ -55,8 +50,7 @@ class UserControllerTests {
     @Test
     void givenTestObjects_whenTesting_thenAssertNotNull() {
         assertNotNull(mockMvc);
-        assertNotNull(service);
-        assertNotNull(mapper);
+        assertNotNull(repository);
         assertNotNull(objectMapper);
     }
 
@@ -73,9 +67,6 @@ class UserControllerTests {
                 .username("user")
                 .password("password")
                 .build();
-
-        doAnswer(invocation -> invocation.getArgument(0))
-                .when(service).createUser(ArgumentMatchers.any(UserEntity.class));
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
@@ -100,12 +91,16 @@ class UserControllerTests {
     @WithAnonymousUser
     void givenAlreadyCreatedUser_whenRegistering_thenThrowBadRequest() throws Exception {
         // given
+        repository.save(UserEntity.builder()
+                .username("user")
+                .password("password")
+                .role("ROLE_USER")
+                .build());
+
         UserDto dto = UserDto.builder()
                 .username("user")
                 .password("password")
                 .build();
-
-        doThrow(AlreadyExistsException.class).when(service).createUser(ArgumentMatchers.any(UserEntity.class));
 
         String jsonContent = objectMapper.writeValueAsString(dto);
 
