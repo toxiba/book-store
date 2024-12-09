@@ -2,7 +2,6 @@ package com.example.bookstore.respositories;
 
 import com.example.bookstore.entities.UserEntity;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -93,7 +92,6 @@ public class UserRepositoryTest {
      * Then, it should return an empty optional
      */
     @Test
-    @Disabled
     void givenInvalidUsername_whenCallingFindById_thenReturnEmptyOptional() {
         // given
         String invalidUsername = "invalid";
