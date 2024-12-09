@@ -1,6 +1,5 @@
 package com.example.bookstore.security;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -9,8 +8,13 @@ import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,13 +47,13 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithMockUser(username = "username", roles = {"USER"})
-    @Disabled
     void givenUser_whenCallingPingPublicEndpoint_returnACK() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI));
 
         // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo("ACK")));
     }
 
     /**
@@ -59,13 +63,13 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Disabled
     void givenAdmin_whenCallingPingPublicEndpoint_returnACK() throws Exception {
-        // given
-
-        // when
+        /// when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI));
 
         // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo("ACK")));
     }
 
     /**
@@ -75,13 +79,13 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithAnonymousUser
-    @Disabled
     void givenAnonymous_whenCallingPingPublicEndpoint_returnACK() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI));
 
         // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo("ACK")));
     }
 
     /*
@@ -94,13 +98,13 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    @Disabled
     void givenUser_whenCallingPingUserAuthenticatedEndpoint_returnACK() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI + "/user"));
 
         // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo("ACK")));
     }
 
     /**
@@ -110,13 +114,12 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Disabled
     void givenAdmin_whenCallingPingUserAuthenticatedEndpoint_returnForbidden() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI + "/user"));
 
         // then
+        result.andExpect(status().isForbidden());
     }
 
     /**
@@ -126,13 +129,12 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithAnonymousUser
-    @Disabled
     void givenAnonymous_whenCallingPingUserAuthenticatedEndpoint_returnUnauthorized() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI + "/user"));
 
         // then
+        result.andExpect(status().isUnauthorized());
     }
 
     /*
@@ -145,13 +147,12 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithMockUser(username = "user", roles = {"USER"})
-    @Disabled
     void givenUser_whenCallingPingAdminAuthenticatedEndpoint_returnForbidden() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI + "/admin"));
 
         // then
+        result.andExpect(status().isForbidden());
     }
 
     /**
@@ -161,13 +162,13 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    @Disabled
     void givenAdmin_whenCallingPingAdminAuthenticatedEndpoint_returnACK() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI + "/admin"));
 
         // then
+        result.andExpect(status().isOk())
+                .andExpect(jsonPath("$", equalTo("ACK")));
     }
 
     /**
@@ -177,13 +178,12 @@ class SecurityPingControllerTest {
      */
     @Test
     @WithAnonymousUser
-    @Disabled
     void givenAnonymous_whenCallingPingAdminAuthenticatedEndpoint_returnUnauthorized() throws Exception {
-        // given
-
         // when
+        ResultActions result = mockMvc.perform(get(PING_CONTROLLER_URI + "/admin"));
 
         // then
+        result.andExpect(status().isUnauthorized());
     }
 
 }
