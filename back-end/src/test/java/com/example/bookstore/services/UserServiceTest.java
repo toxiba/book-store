@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -29,6 +30,9 @@ class UserServiceTest {
     @Mock
     private UserRepository repository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     /**
      * Given the test objects to support the tests,
      * When starting to test
@@ -38,6 +42,7 @@ class UserServiceTest {
     void givenTestObjects_whenTesting_thenAssertNotNull() {
         assertNotNull(service);
         assertNotNull(repository);
+        assertNotNull(passwordEncoder);
     }
 
     /**
@@ -48,6 +53,8 @@ class UserServiceTest {
     @Test
     void givenUser_whenCreating_thenReturnSavedUser() {
         // given
+        String fakeEncodedPassword = "asdiusidasiudhaisudhas";
+
         UserEntity entity = UserEntity.builder()
                 .username("user")
                 .password("password")
@@ -55,6 +62,7 @@ class UserServiceTest {
                 .build();
 
         doReturn(Optional.empty()).when(repository).findById(anyString());
+        doReturn(fakeEncodedPassword).when(passwordEncoder).encode(anyString());
         doAnswer(invocation -> invocation.getArgument(0)).when(repository).save(any(UserEntity.class));
 
         // when
@@ -63,7 +71,7 @@ class UserServiceTest {
         // then
         assertNotNull(actual);
         assertEquals(entity.getUsername(), actual.getUsername());
-        assertEquals(entity.getPassword(), actual.getPassword());
+        assertNotNull(actual.getPassword());
         assertEquals(entity.getRole(), actual.getRole());
     }
 

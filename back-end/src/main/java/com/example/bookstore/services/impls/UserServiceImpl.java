@@ -10,6 +10,7 @@ import com.example.bookstore.services.IBookService;
 import com.example.bookstore.services.IUserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +22,12 @@ public class UserServiceImpl implements IUserService {
 
     private UserRepository repository;
 
+    private PasswordEncoder passwordEncoder;
+
     @Autowired
-    public UserServiceImpl(UserRepository repository) {
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -37,8 +41,9 @@ public class UserServiceImpl implements IUserService {
 
             throw new AlreadyExistsException("User already exists with username: " + entity.getUsername());
         } else {
+            entity.setPassword(passwordEncoder.encode(entity.getPassword()));
             entity = repository.save(entity);
-            log.debug("createBook - created = {}", entity);
+            log.debug("createBook - created = {}", entity.getUsername());
 
             return entity;
         }

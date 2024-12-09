@@ -1,14 +1,13 @@
 package com.example.bookstore.configs;
 
+import com.example.bookstore.entities.UserEntity;
+import com.example.bookstore.respositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.context.event.EventListener;
 
 @Configuration
 @Profile({"local"})
@@ -32,28 +31,26 @@ public class LocalUserInitConfig {
     @Value("${users.admin.role}")
     private String adminRole;
 
-    private PasswordEncoder passwordEncoder;
+    private UserRepository repository;
 
     @Autowired
-    public LocalUserInitConfig(PasswordEncoder passwordEncoder) {
-        this.passwordEncoder = passwordEncoder;
+    public LocalUserInitConfig(UserRepository repository) {
+        this.repository = repository;
     }
 
-    @Bean
-    public UserDetailsService userDetailsService() {
-        var user = User.builder()
+    @EventListener(ApplicationReadyEvent.class)
+    public void doSomethingAfterStartup() {
+        repository.save(UserEntity.builder()
                 .username(userUsername)
-                .password(passwordEncoder.encode(userPassword))
-                .roles(userRole)
-                .build();
+                .password("{noop}" + userPassword)
+                .role(userRole)
+                .build());
 
-        var admin = User.builder()
+        repository.save(UserEntity.builder()
                 .username(adminUsername)
-                .password(passwordEncoder.encode(adminPassword))
-                .roles(adminRole)
-                .build();
-
-        return new InMemoryUserDetailsManager(user, admin);
+                .password("{noop}" + adminPassword)
+                .role(adminRole)
+                .build());
     }
 
 }
