@@ -1,10 +1,8 @@
 package com.example.bookstore.configs;
 
-import com.example.bookstore.mappers.BookMapper;
-import com.example.bookstore.mappers.BookMapperImpl;
-import com.example.bookstore.mappers.UserMapper;
-import com.example.bookstore.mappers.UserMapperImpl;
+import com.example.bookstore.mappers.*;
 import com.example.bookstore.services.IBookService;
+import com.example.bookstore.services.ICartService;
 import com.example.bookstore.services.IUserService;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -35,6 +33,12 @@ public class TestConfig {
     }
 
     @Bean
+    public ICartService cartService() {
+        return Mockito.mock(ICartService.class);
+    }
+
+
+    @Bean
     public BookMapper bookMapper() {
         return new BookMapperImpl();
     }
@@ -42,6 +46,26 @@ public class TestConfig {
     @Bean
     public UserMapper userMapper() {
         return new UserMapperImpl();
+    }
+
+    @Bean
+    public CartMapper cartMapper() {
+        return new CartMapperImpl();
+    }
+
+    @Bean
+    public CartCheckoutMapper cartCheckoutMapper() {
+        return new CartCheckoutMapperImpl();
+    }
+
+    @Bean
+    public CartItemMapper cartItemMapper() {
+        return new CartItemMapperImpl();
+    }
+
+    @Bean
+    public CartItemCheckoutMapper cartItemCheckoutMapper() {
+        return new CartItemCheckoutMapperImpl();
     }
 
     /**

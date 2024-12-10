@@ -3,7 +3,6 @@ package com.example.bookstore.services;
 import com.example.bookstore.entities.UserEntity;
 import com.example.bookstore.respositories.UserRepository;
 import com.example.bookstore.services.impls.CustomUserDetailsService;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +15,6 @@ import org.springframework.test.context.ActiveProfiles;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 

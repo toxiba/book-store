@@ -2,6 +2,7 @@ package com.example.bookstore.integration;
 
 import com.example.bookstore.dtos.UserDto;
 import com.example.bookstore.entities.UserEntity;
+import com.example.bookstore.respositories.CartRepository;
 import com.example.bookstore.respositories.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,12 +34,16 @@ class UserControllerIntegrationTests {
     private UserRepository repository;
 
     @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private static final String USERS_CONTROLLER_URI = "/api/v1/users";
 
     @BeforeEach
     void beforeEach() {
+        cartRepository.deleteAll();
         repository.deleteAll();
     }
 
@@ -51,6 +56,7 @@ class UserControllerIntegrationTests {
     void givenTestObjects_whenTesting_thenAssertNotNull() {
         assertNotNull(mockMvc);
         assertNotNull(repository);
+        assertNotNull(cartRepository);
         assertNotNull(objectMapper);
     }
 
