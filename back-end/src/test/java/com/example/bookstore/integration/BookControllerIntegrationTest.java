@@ -3,6 +3,7 @@ package com.example.bookstore.integration;
 import com.example.bookstore.dtos.BookDto;
 import com.example.bookstore.entities.BookEntity;
 import com.example.bookstore.respositories.BookRepository;
+import com.example.bookstore.respositories.CartRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,12 +37,16 @@ class BookControllerIntegrationTest {
     private BookRepository repository;
 
     @Autowired
+    private CartRepository cartRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     private static final String BOOKS_CONTROLLER_URI = "/api/v1/books";
 
     @BeforeEach
     void beforeEach() {
+        cartRepository.deleteAll();
         repository.deleteAll();
     }
 
